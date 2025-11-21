@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  outage-monitor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: downdetector-bot
+    ports:
+      - "8000:8000"
+    environment:
+      # Scraper configuration
+      - SCRAPER_SCRAPE_INTERVAL_MINUTES=${SCRAPER_SCRAPE_INTERVAL_MINUTES:-10}
+      - SCRAPER_TIMEOUT_SECONDS=${SCRAPER_TIMEOUT_SECONDS:-30}
+      - SCRAPER_RETRY_ATTEMPTS=${SCRAPER_RETRY_ATTEMPTS:-3}
+      - SCRAPER_MONITORED_SERVICES=${SCRAPER_MONITORED_SERVICES:-google,facebook,twitter,instagram,whatsapp}
+
+      # Email configuration
+      - EMAIL_SMTP_HOST=${EMAIL_SMTP_HOST:-localhost}
+      - EMAIL_SMTP_PORT=${EMAIL_SMTP_PORT:-587}
+      - EMAIL_USE_TLS=${EMAIL_USE_TLS:-true}
+      - EMAIL_SMTP_USERNAME=${EMAIL_SMTP_USERNAME:-}
+      - EMAIL_SMTP_PASSWORD=${EMAIL_SMTP_PASSWORD:-}
+      - EMAIL_SENDER_EMAIL=${EMAIL_SENDER_EMAIL:-notifications@localhost}
+      - EMAIL_RECIPIENT_EMAILS=${EMAIL_RECIPIENT_EMAILS:-}
+
+      # AI configuration (Version 2)
+      - AI_PROVIDER=${AI_PROVIDER:-openai}
+      - AI_API_KEY=${AI_API_KEY:-}
+      - AI_MODEL=${AI_MODEL:-gpt-4-turbo-preview}
+      - AI_MAX_TOKENS=${AI_MAX_TOKENS:-500}
+      - AI_ENABLE_CACHE=${AI_ENABLE_CACHE:-true}
+
+      # Change detection
+      - DETECTOR_REPORT_COUNT_THRESHOLD=${DETECTOR_REPORT_COUNT_THRESHOLD:-1000}
+
+      # API configuration
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - API_ENABLE_CORS=${API_ENABLE_CORS:-true}
+
+      # Logging
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - LOG_FILE=/app/logs/outage_monitor.log
+
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Redis for distributed caching (future enhancement)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: outage-monitor-redis
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   restart: unless-stopped
+
+networks:
+  default:
+    name: outage-monitor-network
+
+# volumes:
+#   redis_data:

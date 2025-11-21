@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Outage Alert - {{ service_name }}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        .header {
+            background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .header .service-name {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0;
+        }
+        .content {
+            padding: 30px 20px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin: 0 0 20px 0;
+            border-bottom: 2px solid #e53935;
+            padding-bottom: 10px;
+        }
+        .change-item {
+            margin: 15px 0;
+            padding: 15px;
+            border-left: 4px solid #e53935;
+            background-color: #fafafa;
+            border-radius: 0 4px 4px 0;
+        }
+        .change-type {
+            font-weight: 600;
+            color: #e53935;
+            font-size: 16px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .change-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .detail-item {
+            font-size: 14px;
+        }
+        .detail-label {
+            color: #666;
+            font-weight: 500;
+        }
+        .detail-value {
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+        .status-up { color: #43a047; }
+        .status-issues { color: #fb8c00; }
+        .status-down { color: #e53935; }
+        .severity-low { color: #43a047; }
+        .severity-medium { color: #fb8c00; }
+        .severity-high { color: #f4511e; }
+        .severity-critical { color: #e53935; }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+        .cta-button:hover {
+            background: linear-gradient(135deg, #c62828 0%, #b71c1c 100%);
+        }
+        .footer {
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            background-color: #f5f5f5;
+            border-top: 1px solid #e0e0e0;
+        }
+        .footer a {
+            color: #e53935;
+            text-decoration: none;
+        }
+        @media only screen and (max-width: 480px) {
+            .change-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Service Outage Alert</h1>
+            <p class="service-name">{{ service_name }}</p>
+        </div>
+
+        <div class="content">
+            <h2 class="section-title">Detected Changes</h2>
+
+            {% for change in changes %}
+            <div class="change-item">
+                <div class="change-type">{{ change.change_type.value | replace('_', ' ') }}</div>
+                <div class="change-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Status:</span>
+                        <span class="detail-value status-{{ change.new_status.value }}">
+                            {{ change.new_status.value | upper }}
+                        </span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Severity:</span>
+                        <span class="detail-value severity-{{ change.new_severity.value }}">
+                            {{ change.new_severity.value | upper }}
+                        </span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Reports:</span>
+                        <span class="detail-value">{{ "{:,}".format(change.new_report_count) }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Time:</span>
+                        <span class="detail-value">{{ change.timestamp.strftime('%Y-%m-%d %H:%M UTC') }}</span>
+                    </div>
+                    {% if change.old_status %}
+                    <div class="detail-item">
+                        <span class="detail-label">Previous Status:</span>
+                        <span class="detail-value status-{{ change.old_status.value }}">
+                            {{ change.old_status.value | upper }}
+                        </span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Previous Reports:</span>
+                        <span class="detail-value">{{ "{:,}".format(change.old_report_count) }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="{{ changes[0].service_url }}" class="cta-button">
+                    View on DownDetector
+                </a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Powered by <strong>DownDetector Outage Monitor</strong></p>
+            <p>This is an automated notification. Please do not reply to this email.</p>
+            <p>
+                <a href="{{ changes[0].service_url }}">View Status</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

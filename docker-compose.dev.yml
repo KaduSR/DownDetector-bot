@@ -1,0 +1,21 @@
+version: '3.8'
+
+# Development docker-compose override
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  outage-monitor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      # Mount source code for live reload
+      - ./src:/app/src:ro
+      - ./templates:/app/templates:ro
+      - ./logs:/app/logs
+    environment:
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+      # Use faster scrape interval for development
+      - SCRAPER_SCRAPE_INTERVAL_MINUTES=2
+    command: ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
