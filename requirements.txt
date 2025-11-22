@@ -4,40 +4,38 @@ uvicorn[standard]
 
 # HTTP Client & Web Scraping
 httpx
-crawl4ai==0.7.7
+crawl4ai==0.7.7 # MANTIDO
 
 # Task Scheduling
-apscheduler==3.10.4
-
-# WebSocket
-python-socketio==5.10.0
+apscheduler
+python-socketio
 
 # Data Validation & Settings
-pydantic==2.5.2
-pydantic-settings==2.1.0
+pydantic
+pydantic-settings
 
 # Templating
-jinja2==3.1.2
+jinja2
 
 # Email
-email-validator==2.1.0
-aiosmtplib==3.0.1
+email-validator
+aiosmtplib
 
 # Environment Variables
-python-dotenv==1.0.0
+python-dotenv
 
 # AI Integration (Version 2)
-openai==1.3.7
-anthropic==0.7.8
+openai==1.3.7 # MANTIDO
+anthropic==0.7.8 # MANTIDO
 google-genai
 
 # Testing
-pytest==7.4.3
-pytest-asyncio==0.21.1
-pytest-cov==4.1.0
-responses==0.24.1
+pytest
+pytest-asyncio
+pytest-cov
+responses
 
 # Development
-black==23.12.1
-flake8==6.1.0
-mypy==1.7.1
+black
+flake8
+mypy
