@@ -1,11 +1,11 @@
 # Core Framework
-fastapi             # Removido o pin: pip irá buscar uma versão compatível (e.g., >0.110.0)
-uvicorn[standard]   # Removido o pin: será atualizado junto com o FastAPI
+fastapi             # Remova o pin de versão para forçar a atualização (e.g., >0.110.0)
+uvicorn[standard]   # Remova o pin para garantir a compatibilidade com a nova versão do FastAPI
 
 # HTTP Client & Web Scraping
-httpx               # Removido o pin: será atualizado para suportar anyio 4+
-crawl4ai==0.7.7     # Mantido o pin da ferramenta
-# ... (restante removido, pois não estão em conflito)
+httpx               # Remova o pin de versão para suportar anyio 4+
+crawl4ai==0.7.7     # Mantenha o pin da ferramenta
+
 # Task Scheduling
 apscheduler==3.10.4
 
