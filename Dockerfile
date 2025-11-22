@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Copy requirements first for better caching
 COPY requirements.txt .
-# Install Python dependencies globalmente no estágio builder (CORREÇÃO 1)
+# Instala as dependências globalmente no estágio builder
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Production stage
@@ -25,12 +25,11 @@ WORKDIR /app
 # Create non-root user for security
 RUN useradd --create-home --shell /bin/bash appuser
 
-# Install runtime dependencies (incluindo dependências do Playwright)
+# Install runtime dependencies (Dependências do Playwright CORRIGIDAS)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     libnss3 \
     libxss1 \
-    libgconf-2-4 \
     libasound2 \
     libfontconfig1 \
     libdbus-1-3 \
@@ -39,14 +38,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgbm-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Copia pacotes instalados do caminho global de site-packages (CORREÇÃO 2)
+# Copia pacotes instalados do caminho global de site-packages
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 
 # Copy application code
 COPY --chown=appuser:appuser src/ ./src/
 COPY --chown=appuser:appuser templates/ ./templates/
 
-# Cria diretório logs e define permissões (precisa ser feito como root)
+# Cria diretório logs e define permissões (feito como root antes de mudar para appuser)
 RUN mkdir -p logs && chown appuser:appuser logs
 
 # Switch to non-root user
